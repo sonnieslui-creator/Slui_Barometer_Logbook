@@ -63,4 +63,27 @@ class DatabaseHelper {
       orderBy: 'id DESC',
     );
   }
+   Future<int> deleteMeasurement(int id) async {
+    final db = await database;
+
+    return await db.delete(
+      'measurements',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
+
+  Future<int> updateMeasurement(
+    Map<String, dynamic> row,
+    int id,
+  ) async {
+    final db = await database;
+
+    return await db.update(
+      'measurements',
+      row,
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+  }
 }
