@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
+import 'dart:io';
+import 'package:csv/csv.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class LogbookPage extends StatefulWidget {
   const LogbookPage({super.key});
@@ -16,7 +20,50 @@ class _LogbookPageState extends State<LogbookPage> {
     super.initState();
     loadMeasurements();
   }
+  Future<void> exportCsv() async {
+  final data =
+      await DatabaseHelper.instance.getMeasurements();
 
+  List<List<dynamic>> rows = [];
+
+  rows.add([
+    "Datum",
+    "Tijd",
+    "Druk_hPa",
+    "Temperatuur_C",
+    "Luchtvochtigheid_pct"
+  ]);
+
+  for (var item in data) {
+    rows.add([
+      item["date"],
+      item["time"],
+      item["pressure"],
+      item["temperature"],
+      item["humidity"],
+    ]);
+  }
+
+  final csv =
+      const ListToCsvConverter().convert(rows);
+
+  final directory =
+      await getApplicationDocumentsDirectory();
+
+  final path =
+      "${directory.path}/barometer_logbook.csv";
+
+  final file = File(path);
+
+  await file.writeAsString(csv);
+
+  await SharePlus.instance.share(
+    ShareParams(
+      files: [XFile(path)],
+      text: "Slui Barometer Logbook Export",
+    ),
+  );
+}
   Future<void> loadMeasurements() async {
     final data =
         await DatabaseHelper.instance.getMeasurements();
@@ -121,8 +168,14 @@ class _LogbookPageState extends State<LogbookPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Barometer Logboek"),
-      ),
+  title: const Text("Barometer Logboek"),
+  actions: [
+    IconButton(
+      icon: const Icon(Icons.download),
+      onPressed: exportCsv,
+    ),
+  ],
+),
       body: measurements.isEmpty
           ? const Center(
               child: Text(

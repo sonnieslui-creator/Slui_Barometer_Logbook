@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'database_helper.dart';
 import 'logbook_page.dart';
+import 'Grafieken.dart';
 
 void main() {
   runApp(const BarometerApp());
@@ -144,6 +145,23 @@ class _BarometerHomePageState
                 child: const Text("Open Logbook"),
               ),
             ),
+            const SizedBox(height: 10),
+
+SizedBox(
+  width: double.infinity,
+  child: ElevatedButton(
+    onPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              const GrafiekenPage(),
+        ),
+      );
+    },
+    child: const Text("Open Grafieken"),
+  ),
+),
           ],
         ),
       ),
